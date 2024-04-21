@@ -10,6 +10,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { login, register } from "./controllers/auth.js";
 import userRoutes from "./routes/userRoutes.js";
+import postRoutes from "./routes/postRoutes.js";
 const PORT = process.env.PORT | 5000;
 
 /* configure */
@@ -43,6 +44,9 @@ app.post("/auth/login", login);
 
 //user routes
 app.use("/users", userRoutes);
+
+//post routes
+app.use("/users", postRoutes);
 // database connection
 mongoose
   .connect(process.env.MONGO_URL)
