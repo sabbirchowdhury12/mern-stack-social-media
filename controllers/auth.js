@@ -4,17 +4,17 @@ import User from "../models/user.js";
 
 export const register = async (req, res) => {
   try {
-    const birthDate = "01 january 2021";
     const {
       firstName,
       lastName,
       email,
       password,
-      picturePath,
+      picture,
       friends,
       location,
       occupation,
     } = req.body;
+
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
     const newUser = new User({
@@ -22,20 +22,25 @@ export const register = async (req, res) => {
       lastName,
       email,
       password: passwordHash,
-      picturePath,
+      picturePath: picture,
       friends,
       location,
       occupation,
-      birthDate,
+
       viewedProfile: Math.floor(Math.random() * 10000),
       impressions: Math.floor(Math.random() * 10000),
     });
     const savedUser = await newUser.save();
-    res
-      .status(201)
-      .json({ message: "user create successfully", data: savedUser });
+    res.status(201).json({
+      status: true,
+      message: "user create successfully",
+      data: savedUser,
+    });
   } catch (error) {
-    res.status(500).json({ message: "something wrong. try again", error });
+    console.log(error);
+    res
+      .status(500)
+      .json({ status: false, message: "something wrong. try again" });
   }
 };
 
@@ -43,17 +48,27 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
+
     const user = await User.findOne({ email: email });
-    if (!user) return res.status(400).json({ msg: "User does not exist. " });
+    if (!user)
+      return res
+        .status(400)
+        .json({ status: false, msg: "User does not exist. " });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials. " });
+    if (!isMatch)
+      return res
+        .status(400)
+        .json({ status: false, msg: "Invalid credentials. " });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     delete user.password;
-    res.status(200).json({ message: "User login successfully", token, user });
+    res
+      .status(200)
+      .json({ status: true, message: "User login successfully", token, user });
   } catch (error) {
-    res.status(500).json({ message: "something wrong. try again", error });
+    res
+      .status(500)
+      .json({ status: false, message: "something wrong. try again", error });
   }
 };
