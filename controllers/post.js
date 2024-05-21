@@ -53,7 +53,7 @@ export const commentPost = async (req, res) => {
   try {
     const { id } = req.params;
     const { comment } = req.body;
-    console.log(id, comment);
+
     const post = await Post.findById(id);
     post.comments.push(comment);
     const updatedPost = await post.save();

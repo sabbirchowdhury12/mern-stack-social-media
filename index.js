@@ -47,6 +47,10 @@ app.use("/posts", postRoutes);
 //user routes
 app.use("/users", userRoutes);
 
+app.get("/", (req, res) => {
+  res.json({ status: "successfull" });
+});
+
 // database connection
 mongoose
   .connect(process.env.MONGO_URL)
