@@ -37,7 +37,6 @@ export const register = async (req, res) => {
       data: savedUser,
     });
   } catch (error) {
-    console.log(error);
     res
       .status(500)
       .json({ status: false, message: "something wrong. try again" });
@@ -49,20 +48,20 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email }); // <-- Check here
     if (!user)
       return res
         .status(400)
         .json({ status: false, msg: "User does not exist. " });
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password); // <-- And here
     if (!isMatch)
       return res
         .status(400)
         .json({ status: false, msg: "Invalid credentials. " });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    delete user.password;
+    delete user.password; // <-- Check this line
     res
       .status(200)
       .json({ status: true, message: "User login successfully", token, user });
